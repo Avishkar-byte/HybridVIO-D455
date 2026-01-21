@@ -1,0 +1,73 @@
+%YAML:1.0
+
+#common parameters
+#support: 1 imu 1 cam; 1 imu 2 cam: 2 cam; 
+imu: 0         
+num_of_cam: 2  
+
+imu_topic: "/camera/imu"
+image0_topic: "/camera/infra1/image_rect_raw"
+image1_topic: "/camera/infra2/image_rect_raw"
+output_path: "/home/avishkar/VIO/logs/"
+
+cam0_calib: "left_d455.yaml"
+cam1_calib: "right_d455.yaml"
+image_width: 848
+image_height: 480
+   
+
+# Extrinsic parameter between IMU and Camera.
+estimate_extrinsic: 1   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
+                        # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
+
+# Rotation from Camera Frame to IMU Frame
+# Ideally, run Kalibr or similar. For now, we trust the online estimator.
+body_T_cam0: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 1, 0, 0, -0.02,
+           0, 1, 0,  0.00,
+           0, 0, 1,  0.01,
+           0, 0, 0, 1 ]
+
+body_T_cam1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 1, 0, 0, 0.03,
+           0, 1, 0, 0.00,
+           0, 0, 1, 0.01,
+           0, 0, 0, 1 ]
+
+#Multiple thread support
+multiple_thread: 1
+
+#feature traker paprameters
+max_cnt: 150            # max feature number in feature tracking
+min_dist: 30            # min distance between two features 
+freq: 10                # frequence (Hz) of publish tracking result
+F_threshold: 1.0        # ransac threshold (pixel)
+show_track: 1           # publish tracking image as topic
+flow_back: 1            # perform forward and backward optical flow to improve feature tracking accuracy
+
+#optimization parameters
+max_solver_time: 0.04  # max solver itration time (ms), to guarantee real time
+max_num_iterations: 8   # max solver itrations, to guarantee real time
+keyframe_parallax: 10.0 # keyframe selection threshold (pixel)
+
+#imu parameters (BMI085 on D455)
+acc_n: 0.1          # accelerometer measurement noise standard deviation.
+gyr_n: 0.01         # gyroscope measurement noise standard deviation.
+acc_w: 0.001        # accelerometer bias random work noise standard deviation.
+gyr_w: 0.0001       # gyroscope bias random work noise standard deviation.
+g_norm: 9.805       # gravity magnitude
+
+#unsynchronization parameters
+estimate_td: 1                      # online estimate time offset between camera and imu
+td: 0.00                            # initial value
+
+#loop closure parameters
+load_previous_pose_graph: 0
+pose_graph_save_path: "/home/avishkar/VIO/logs/pose_graph/"
+save_image: 1

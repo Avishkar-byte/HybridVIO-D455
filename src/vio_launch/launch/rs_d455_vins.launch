@@ -1,0 +1,43 @@
+<launch>
+    <!-- Argument to reset camera on start -->
+    <arg name="initial_reset" default="false"/>
+
+    <!-- 1. RealSense Driver -->
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <arg name="align_depth" value="false"/> <!-- We don't need depth alignment for Stereo VIO -->
+        
+        <!-- IMU Settings (Disabled for purely Visual Odometry Baseline) -->
+        <!-- IMU Settings (Disabled for purely Visual Odometry Baseline) -->
+        <arg name="unite_imu_method" value=""/> 
+        <arg name="enable_gyro" value="false"/>
+        <arg name="enable_accel" value="false"/>
+        
+        <!-- Stereo IR Settings - 848x480 @ 30fps is good for VIO -->
+        <arg name="enable_infra1" value="true"/>
+        <arg name="enable_infra2" value="true"/>
+        <arg name="infra_width" value="848"/>
+        <arg name="infra_height" value="480"/>
+        <arg name="infra_fps" value="30"/>
+        
+        <!-- Increase IMU rates (Ignored when disabled) -->
+        <arg name="gyro_fps" value="400"/>
+        <arg name="accel_fps" value="200"/>
+
+        <!-- Disable unused streams to save bandwidth -->
+        <arg name="enable_color" value="false"/>
+        <arg name="enable_depth" value="false"/>
+        
+        <!-- Synchronization -->
+        <arg name="enable_sync" value="true"/>
+        <!-- <arg name="initial_reset" value="$(arg initial_reset)"/> -->
+    </include>
+
+    <!-- 2. VINS-Fusion Estimator (Visual Only Mode) -->
+    <node name="vins_estimator" pkg="vins" type="vins_node" args="$(find vio_launch)/config/realsense_d455_stereo_imu.yaml" output="screen" />
+
+    <!-- 3. Loop Closure (Optional) - Disabled due to build issues -->
+    <!-- <node name="loop_fusion" pkg="loop_fusion" type="loop_fusion_node" args="$(find vio_launch)/config/realsense_d455_stereo_imu.yaml" output="screen" /> -->
+
+    <!-- 4. Visualization -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find vio_launch)/config/vins.rviz" /> -->
+</launch>

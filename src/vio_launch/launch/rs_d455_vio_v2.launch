@@ -1,0 +1,39 @@
+<launch>
+    <!-- Argument to reset camera on start -->
+    <arg name="initial_reset" default="false"/>
+
+    <!-- 1. RealSense Driver (IMAGES ONLY) -->
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <arg name="align_depth" value="false"/>
+        
+        <!-- DISABLE Driver IMU (We use custom node) -->
+        <arg name="unite_imu_method" value=""/> 
+        <arg name="enable_gyro" value="false"/>
+        <arg name="enable_accel" value="false"/>
+        
+        <!-- Stereo IR Settings -->
+        <arg name="enable_infra1" value="true"/>
+        <arg name="enable_infra2" value="true"/>
+        <arg name="infra_width" value="848"/>
+        <arg name="infra_height" value="480"/>
+        <arg name="infra_fps" value="30"/>
+        
+        <!-- Disable unused streams -->
+        <arg name="enable_color" value="false"/>
+        <arg name="enable_depth" value="false"/>
+        
+        <!-- Synchronization -->
+        <arg name="enable_sync" value="true"/>
+        <arg name="initial_reset" value="$(arg initial_reset)"/>
+    </include>
+
+    <!-- 2. Custom IMU Node -->
+    <!-- Runs directly from scripts folder -->
+    <node name="d455_imu_publisher" pkg="vio_launch" type="imu_publisher_node.py" output="screen" />
+
+    <!-- 3. VINS-Fusion Estimator (Stereo + IMU) -->
+    <node name="vins_estimator" pkg="vins" type="vins_node" args="$(find vio_launch)/config/realsense_d455_stereo_imu_v2.yaml" output="screen" />
+
+    <!-- 4. Visualization -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find vio_launch)/config/vins.rviz" /> -->
+</launch>

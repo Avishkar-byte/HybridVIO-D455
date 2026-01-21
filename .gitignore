@@ -1,0 +1,12 @@
+build/
+devel/
+logs/
+.catkin_workspace
+.vscode/
+*.pyc
+__pycache__/
+*.swp
+*~
+.DS_Store
+vio.csv
+output/

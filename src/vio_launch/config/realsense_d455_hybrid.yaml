@@ -1,0 +1,66 @@
+%YAML:1.0
+
+# Common
+imu: 1
+num_of_cam: 2
+imu_topic: "/camera/imu"
+image0_topic: "/camera/infra1/image_rect_raw"
+image1_topic: "/camera/infra2/image_rect_raw"
+output_path: "/home/avishkar/VIO/logs/"
+
+# Calibration
+cam0_calib: "left_d455.yaml"
+cam1_calib: "right_d455.yaml"
+image_width: 848
+image_height: 480
+
+# Rotation: Optical (R-D-F) to Body (F-L-U)
+# [ 0, 0, 1]
+# [-1, 0, 0]
+# [ 0,-1, 0]
+body_T_cam0: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 0, 0, 1, -0.011,
+           -1, 0, 0, 0.005,
+           0, -1, 0, 0.005,
+           0, 0, 0, 1 ]
+
+body_T_cam1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 0, 0, 1, -0.106,
+           -1, 0, 0, 0.005,
+           0, -1, 0, 0.005,
+           0, 0, 0, 1 ]
+
+# IMU Parameters (D455)
+acc_n: 0.1
+gyr_n: 0.01
+acc_w: 0.001
+gyr_w: 0.0001
+g_norm: 9.805
+
+# Synchronization
+estimate_td: 1
+td: 0.0
+
+# VINS Optimization
+max_solver_time: 0.04  # max solver itration time (ms), to guarantee real time
+max_num_iterations: 8   # max solver itrations, to guarantee real time
+keyframe_parallax: 10.0 # keyframe selection threshold (pixel)
+
+# Feature Tracking
+max_cnt: 150            # max feature number in feature tracking
+min_dist: 30            # min distance between two features 
+freq: 10                # frequence (Hz) of publish tracking result
+F_threshold: 1.0        # ransac threshold (pixel)
+show_track: 1           # publish tracking image as topic
+flow_back: 1            # perform forward and backward optical flow to improve feature tracking accuracy
+
+# Loop Closure
+load_previous_pose_graph: 0
+pose_graph_save_path: "/home/avishkar/VIO/logs/pose_graph/"
+save_image: 1

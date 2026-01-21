@@ -1,0 +1,15 @@
+<launch>
+    <!-- Argument to reset camera on start -->
+    <!-- Custom C++ Driver Node -->
+    <node name="d455_driver" pkg="d455_driver" type="d455_node" output="screen">
+        <!-- Add parameters here if needed -->
+    </node>
+
+    <!-- VINS-Fusion Estimator (Stereo + IMU) -->
+    <!-- Note: We updated the config to point to d455_driver topics if they differ, 
+         but our driver uses /camera/infra1/image_rect_raw matching standard -->
+    <node name="vins_estimator" pkg="vins" type="vins_node" args="$(find vio_launch)/config/realsense_d455_stereo_imu_v2.yaml" output="screen" />
+
+    <!-- Visualization -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find vio_launch)/config/vins.rviz" /> -->
+</launch>
